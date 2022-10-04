@@ -7,6 +7,14 @@ bot = telebot.TeleBot('5791614763:AAH2G2i8tccHGsw9PvVuwD-EdNKroYy_2Hk')
 # real 5791614763:AAH2G2i8tccHGsw9PvVuwD-EdNKroYy_2Hk
 # test 5734914555:AAEPdNUsCpv4n49jie8C9P7TojK_McPkCIU
 
+@bot.message_handler(commands=['hi'])
+def hi(message):
+    if message.chat.id == 1891281816:
+        bot.send_message(1208542295, 'Привет, Саша. Я работаю над проектом!')
+
+    elif message.chat.id == 1208542295:
+        bot.send_message(1891281816, 'Привет, Илья. Я работаю над проектом!')
+
 
 @bot.message_handler(commands=['start'])
 def start(message):
@@ -44,15 +52,12 @@ def mess(message):
                 M = [int(i) for i in text_message.split()]
                 x = M[0]
                 n = M[1]
-                print(x, n)
                 N = []
                 while x > 0:
                     N.append(str(x % n))
                     x //= n
                 N.reverse()
-                print(N)
                 res_string = "".join(N)
-                print(res_string)
 
                 message_text = f"Перевели число {M[0]} из 10-ной в {n}-ую систему\nРезультат вычисление: {res_string}_{n}"
                 bot.send_message(message.chat.id, message_text)
