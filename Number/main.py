@@ -7,13 +7,23 @@ bot = telebot.TeleBot('5791614763:AAH2G2i8tccHGsw9PvVuwD-EdNKroYy_2Hk')
 # real 5791614763:AAH2G2i8tccHGsw9PvVuwD-EdNKroYy_2Hk
 # test 5734914555:AAEPdNUsCpv4n49jie8C9P7TojK_McPkCIU
 
+# 👉 🙏 👆 👇 😅 👋 🙌 ☺️ ❗ ️‼️ ✌️ 👌 ✊ 👨‍💻  🤖 😉  ☝️ ❤️ 💪 ✍️ 🎯  ⛔  ️✅ 📊📈🧮   🗳️
+Alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+
 @bot.message_handler(commands=['hi'])
 def hi(message):
     if message.chat.id == 1891281816:
-        bot.send_message(1208542295, 'Привет, Саша. Я работаю над проектом!')
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1, one_time_keyboard=True)
+        btn1 = types.KeyboardButton('Уведомлен ✅')
+        markup.add(btn1)
+        bot.send_message(1208542295, 'Привет, Саша. Я работаю над проектом!', reply_markup=markup)
 
     elif message.chat.id == 1208542295:
-        bot.send_message(1891281816, 'Привет, Илья. Я работаю над проектом!')
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1, one_time_keyboard=True)
+        btn1 = types.KeyboardButton('Уведомлен ✅')
+        markup.add(btn1)
+        bot.send_message(1891281816, 'Привет, Илья. Я работаю над проектом!', reply_markup=markup)
+
 
 
 @bot.message_handler(commands=['start'])
@@ -41,37 +51,66 @@ def start(message):
 def mess(message):
     get_message_bot = message.text.strip()
 
+
+    # Кнопки для перевода в системы -------------------------------------------------------------------------------------
     if get_message_bot == "Перевод из 10-ной в N-ную":
-        bot.send_message(message.chat.id, 'Введите число и систему в определенном порядке:\n'
-                                          '*[10-ное число] [В какую систему счисления]*', parse_mode='Markdown')
+        bot.send_message(message.chat.id, 'Введите два числа через пробел:\n'
+                                          '*[10-ное число] [n-ную систему счисления]*', parse_mode='Markdown')
 
         @bot.message_handler(content_types=['text'])
         def message_input(message):
             try:
                 text_message = message.text
                 M = [int(i) for i in text_message.split()]
-                x = M[0]
-                n = M[1]
-                N = []
-                while x > 0:
-                    N.append(str(x % n))
-                    x //= n
-                N.reverse()
-                res_string = "".join(N)
+                if len(M) == 2:
+                    x = M[0]  # число которое будем переводить в систему счисления n
+                    n = M[1]  # система счисления
+                    RES = []
+                    while x > 0:
+                        RES.append(Alphabet[x % n])
+                        x //= n
+                    RES.reverse()
+                    res_string = "".join(RES)
 
-                message_text = f"Перевели число {M[0]} из 10-ной в {n}-ую систему\nРезультат вычисление: {res_string}_{n}"
-                bot.send_message(message.chat.id, message_text)
+                    message_text = f"Перевели число {M[0]} *из 10-ной* в *{n}-ую систему*\n\nРезультат вычисление: *{res_string}* в {n}-ной системе счисления."
+                    bot.send_message(message.chat.id, message_text, parse_mode='Markdown')
+                else:
+                    bot.send_message(message.chat.id, "Введите два числа, через пробел!")
             except IndexError:
                 bot.send_message(message.chat.id, "Введите два числа, через пробел!")
             except ZeroDivisionError:
                 bot.send_message(message.chat.id, "На нуль делить нельзя, плюс нуль всегда является нулем!")
         bot.register_next_step_handler(message, message_input)
 
-    if get_message_bot == "Перевод из N-ной в 10-ную":
+
+    elif get_message_bot == "Перевод из N-ной в 10-ную":
         bot.send_message(message.chat.id, 'Пока что разрабатываем!')
 
-    if get_message_bot == "Перевод из N-ной в K-тую":
+
+    elif get_message_bot == "Перевод из N-ной в K-тую":
         bot.send_message(message.chat.id, 'Пока что разрабатываем!')
+    # Кнопки для перевода в системы -------------------------------------------------------------------------------------
+
+    # Кнопка Уведомлен --------------------------------------------------------------------------------------------------
+    elif get_message_bot == "Уведомлен ✅":
+        if message.chat.id == 1891281816:
+            markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
+            btn1 = types.KeyboardButton('Перевод из 10-ной в N-ную')
+            btn2 = types.KeyboardButton('Перевод из N-ной в 10-ную')
+            btn3 = types.KeyboardButton('Перевод из N-ной в K-тую')
+            markup.add(btn1, btn2, btn3)
+            bot.send_dice(1891281816, reply_markup=markup)
+            bot.send_message(1208542295, 'Ваш коллега, принял уведомление!')
+
+        elif message.chat.id == 1208542295:
+            markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
+            btn1 = types.KeyboardButton('Перевод из 10-ной в N-ную')
+            btn2 = types.KeyboardButton('Перевод из N-ной в 10-ную')
+            btn3 = types.KeyboardButton('Перевод из N-ной в K-тую')
+            markup.add(btn1, btn2, btn3)
+            bot.send_dice(1208542295, reply_markup=markup)
+            bot.send_message(1891281816, 'Ваш коллега, принял уведомление!')
+    # Кнопка Уведомлен --------------------------------------------------------------------------------------------------
 
 
 
@@ -83,19 +122,6 @@ def step(call):
 
     if call.data == 'КлючСобытия':
         pass
-
-@bot.message_handler(commands=['start'])
-def start(message):
-    markup1 = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
-    btn1 = types.KeyboardButton('Репетитор')
-    markup1.add(btn1)
-    send_mess = f'👋 Доброго времени суток, *{message.from_user.first_name}*!'
-    bot.send_message(message.chat.id, send_mess, parse_mode='Markdown', reply_markup=markup1)
-
-    markup2 = types.InlineKeyboardMarkup(row_width=1)
-    markup2.add(types.InlineKeyboardButton("Кнопка", callback_data="КлючСобытия"))
-    pic_1 = open("hello.jpeg", 'rb')
-    bot.send_photo(message.chat.id, pic_1, reply_markup=markup2)
 
 @bot.message_handler(commands=['voice'])
 def voice(message):
