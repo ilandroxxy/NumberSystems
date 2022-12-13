@@ -2,6 +2,7 @@
 import telebot
 from telebot import types
 import time
+import random
 
 
 bot = telebot.TeleBot('5791614763:AAH2G2i8tccHGsw9PvVuwD-EdNKroYy_2Hk')
@@ -11,6 +12,64 @@ bot = telebot.TeleBot('5791614763:AAH2G2i8tccHGsw9PvVuwD-EdNKroYy_2Hk')
 
 # 👉 🙏 👆 👇 😅 👋 🙌 ☺️ ❗ ️‼️ ✌️ 👌 ✊ 👨‍💻  🤖 😉  ☝️ ❤️ 💪 ✍️ 🎯  ⛔  ️✅ 📊📈🧮   🗳️
 Alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+
+
+@bot.callback_query_handler(func=lambda call: True)
+def step(call):
+
+    if call.data == 'lvl_1':
+        M = [2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16]
+        n = random.choice(M)
+        a = random.randint(20, 1000)
+        bot.send_message(call.message.chat.id, f'*Отправляю пример:*\nПереведите *{a}* из *10-ной* в *{n}-ную* систему счисления'
+                                               f'\n\nОтвет введите в виде целочисленного, *без указания на систему счисления*.', parse_mode='Markdown')
+
+        M = []
+        while a > 0:
+            M.append(str(a % n))
+            a //= n
+        M.reverse()
+        r = ''.join(M)
+
+
+        @bot.message_handler(content_types=['text'])
+        def message_input(message):
+            x = message.text
+
+            if x == r:
+                markup = types.InlineKeyboardMarkup(row_width=1)
+                btn1 = types.InlineKeyboardButton('Получить еще один пример', callback_data='lvl_1')
+                markup.add(btn1)
+                bot.send_message(call.message.chat.id, f'Поздравляю, ответ верный!\nВернуться в меню тренажера 👉 /game', reply_markup=markup)
+            else:
+                markup = types.InlineKeyboardMarkup(row_width=1)
+                btn1 = types.InlineKeyboardButton('Повторить попытку с новым примером', callback_data='lvl_1')
+                markup.add(btn1)
+                bot.send_message(call.message.chat.id, f'Ответ неверный, правильный ответ: {r}\nВернуться в меню тренажера 👉 /game', reply_markup=markup)
+
+        bot.register_next_step_handler(call.message, message_input)
+
+    elif call.data == 'lvl_2':
+        pass
+
+    elif call.data == 'lvl_3':
+        pass
+
+
+# region Команда GAME
+@bot.message_handler(commands=['game'])
+def game(message):
+    markup = types.InlineKeyboardMarkup(row_width=1)
+    btn1 = types.InlineKeyboardButton('Получить пример из 10-ной в n-ную', callback_data='lvl_1')
+    btn2 = types.InlineKeyboardButton('Получить пример из n-ной в 10-ную', callback_data='lvl_2')
+    btn3 = types.InlineKeyboardButton('Получить пример из k-ой в n-ную', callback_data='lvl_3')
+    markup.add(btn1, btn2, btn3)
+    bot.send_message(message.chat.id, f'Добро пожаловать в нашу игру:\n*Тренажер счет систем счислений*', parse_mode='Markdown', reply_markup=markup)
+
+
+
+
+# endregion Команда GAME
 
 # region команда HI
 @bot.message_handler(commands=['hi'])
@@ -140,34 +199,6 @@ def mess(message):
             bot.send_message(1891281816, 'Ваш коллега, принял уведомление!')
     # Кнопка Уведомлен --------------------------------------------------------------------------------------------------
 
-
-
-
-'''
-@bot.callback_query_handler(func=lambda call: True)
-def step(call):
-    markup = telebot.types.InlineKeyboardMarkup(row_width=1)
-
-    if call.data == 'КлючСобытия':
-        pass
-
-@bot.message_handler(commands=['voice'])
-def voice(message):
-
-    @bot.message_handler(content_types=['text'])
-    def message_input(message):
-        text_message = message.text
-        bot.send_message(message.chat.id, text_message)
-
-    bot.register_next_step_handler(message, message_input)
-
-@bot.message_handler(content_types=['text'])
-def mess(message):
-    get_message_bot = message.text.strip()
-
-    if get_message_bot == "Репетитор":
-        pass
-'''
 
 if __name__ == '__main__':
     while True:
