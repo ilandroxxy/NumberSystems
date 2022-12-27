@@ -12,7 +12,8 @@ bot = telebot.TeleBot('5791614763:AAH2G2i8tccHGsw9PvVuwD-EdNKroYy_2Hk')
 
 # 👉 🙏 👆 👇 😅 👋 🙌 ☺️ ❗ ️‼️ ✌️ 👌 ✊ 👨‍💻  🤖 😉  ☝️ ❤️ 💪 ✍️ 🎯  ⛔  ️✅ 📊📈🧮   🗳️
 Alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-
+GOOD_ANSWERS = (f'Поздравляю, ответ верный!\nВернуться в меню тренажера 👉 /game', f'Ответ верный!\nВернуться в меню тренажера 👉 /game', f'Отлично! Двигаемся дальше ☺\nВернуться в меню тренажера 👉 /game', f'У тебя получилось! Молодец!\nВернуться в меню тренажера 👉 /game')
+BAD_ANSWERS = (f'Ответ неверный😭 Попробуй ещё раз!', 'Ответ неверный. Получить еще один пример\nВернуться в меню тренажера 👉 /game', "По-моему, Вы ошиблись.", "Мне кажется, это неправильно🤔")
 
 @bot.callback_query_handler(func=lambda call: True)
 def step(call):
@@ -40,17 +41,48 @@ def step(call):
                 markup = types.InlineKeyboardMarkup(row_width=1)
                 btn1 = types.InlineKeyboardButton('Получить еще один пример', callback_data='lvl_1')
                 markup.add(btn1)
-                bot.send_message(call.message.chat.id, f'Поздравляю, ответ верный!\nВернуться в меню тренажера 👉 /game', reply_markup=markup)
+                bot.send_message(call.message.chat.id, random.choice(GOOD_ANSWERS), reply_markup=markup)
             else:
                 markup = types.InlineKeyboardMarkup(row_width=1)
                 btn1 = types.InlineKeyboardButton('Повторить попытку с новым примером', callback_data='lvl_1')
                 markup.add(btn1)
-                bot.send_message(call.message.chat.id, f'Ответ неверный, правильный ответ: {r}\nВернуться в меню тренажера 👉 /game', reply_markup=markup)
+                bot.send_message(call.message.chat.id, random.choice(BAD_ANSWERS), reply_markup=markup)
 
         bot.register_next_step_handler(call.message, message_input)
 
     elif call.data == 'lvl_2':
-        pass
+        M = [2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16]
+        letters = ''
+        n = random.choice(M)
+        a = random.randint(2, 10)
+        for _ in range (a):
+            letters += random.choice(Alphabet[:n])
+        bot.send_message(call.message.chat.id,
+                         f'*Отправляю пример:*\nПереведите *{letters}* из *{n}-ной* в *10-ную* систему счисления'
+                         f'\n\nОтвет введите в виде целочисленного, *без указания на систему счисления*.',
+                         parse_mode='Markdown')
+
+        r = int(letters, n)
+
+        @bot.message_handler(content_types=['text'])
+        def message_input(message):
+            x = message.text
+
+            if x == str(r):
+                markup = types.InlineKeyboardMarkup(row_width=1)
+                btn1 = types.InlineKeyboardButton('Получить еще один пример', callback_data='lvl_2')
+                markup.add(btn1)
+                bot.send_message(call.message.chat.id, random.choice(GOOD_ANSWERS))
+
+            else:
+                markup = types.InlineKeyboardMarkup(row_width=1)
+                btn1 = types.InlineKeyboardButton('Повторить попытку с новым примером', callback_data='lvl_2')
+                markup.add(btn1)
+                bot.send_message(call.message.chat.id, random.choice(BAD_ANSWERS),
+                                 reply_markup=markup)
+
+        bot.register_next_step_handler(call.message, message_input)
+
 
     elif call.data == 'lvl_3':
         pass
@@ -70,6 +102,18 @@ def game(message):
 
 
 # endregion Команда GAME
+
+# region Команда CREATORS
+@bot.message_handler(commands=['creators'])
+def creators(message):
+    bot.send_message(message.chat.id, f'Я Александра, а это мой Telegram Bot по системам счисления, который я разработала со своим репетитором Ильёй @ilandroxy.  '
+                                      f'\n\nЯ ученица 8 класса и очень стремлюсь к новым знаниям. И в принципе хочу связать свою жизнь с IT-сферой. '
+                                      f'В данный момент я обучаюсь на онлайн курсе "Код будущего" на направлении "Разработка на Pyton" в университете Синергия.  '
+                                      f'А также с Ильёй мы делаем интересные проекты, не входящие в программу курса. Илья - профессиональный репетитор. '
+                                      f'Он закончил СибГУТИ по специальности "Информатика и Вычеслительная техника". '
+                                      f'На данный момент Илья проходит обучение в НГПУ, по направлению: _«Педагогическое образование для специалистов с высшим непедагогическим образованием»_.', parse_mode='Markdown')
+
+# endregion Команда CREATORS
 
 # region команда HI
 @bot.message_handler(commands=['hi'])
